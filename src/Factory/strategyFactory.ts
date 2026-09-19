@@ -38,7 +38,7 @@ export class StrategyFactory {
                     options.windowSizeMs,
                     store
                 )
-            case "fixed-winodw":
+            case "fixed-window":
 
                 return new FixedWindowLimiter(
                     options.capacity,

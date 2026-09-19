@@ -1,7 +1,7 @@
 
 import { RateLimitResult } from "../Interfaces/rateLimitResult";
 import { RateLimiterStore } from "./RateLimiterStore";
-import { getKey } from "../helperFunctons/getKey";
+import { getKey } from "../helperFunctions/getKey";
 
 type MemoryBucket = {
     expireAt: number;
@@ -115,7 +115,7 @@ export class MemoryStore implements RateLimiterStore {
                 allowed: true,
                 retryAfterMs: 0,
                 limit: maxRequests,
-                remaining: maxRequests - requestsProcessed,
+                remaining: maxRequests - (requestsProcessed+1),
             }
             this.setBucket(key, {
                 requests: requestsProcessed + 1,
@@ -172,7 +172,7 @@ export class MemoryStore implements RateLimiterStore {
 
         let result: RateLimitResult;
 
-        if (tokensLeft >= 1) {   // enought tokens to process the request 
+        if (tokensLeft >= 1) {   // enough tokens to process the request
             tokensLeft -= 1;
 
             this.setBucket(key, {
@@ -241,7 +241,7 @@ export class MemoryStore implements RateLimiterStore {
 
         waterLevel = Math.max(0, waterLevel - leakedWater);
 
-        // now check that wheater this request can be processed or not 
+        // now check whether this request can be processed or not
         let result: RateLimitResult;
 
         if (waterLevel + 1 <= capacity) {
@@ -327,7 +327,7 @@ export class MemoryStore implements RateLimiterStore {
         }
 
         else {
-            // cannot proceed with tihs request 
+            // cannot proceed with this request
             this.setBucket(key, {
                 timestamps: filteredBucket,
             }, this.getSlidingWindowExpiry(windowSizeMs, currentTime));
@@ -365,7 +365,7 @@ export class MemoryStore implements RateLimiterStore {
         if (!bucket) {
             bucket = {
                 currentWindow: 0,
-                previouseWindow: 0,
+                previousWindow: 0,
                 windowStart: currentTime,
                 expireAt: this.getSlidingWindowExpiry(windowSizeMs, currentTime),
 
@@ -375,7 +375,7 @@ export class MemoryStore implements RateLimiterStore {
 
         let elapsedTime = currentTime - bucket.windowStart;
         let currentWindowRequestCount = bucket.currentWindow;
-        let previousWindowRequestCount= bucket.previouseWindow;
+        let previousWindowRequestCount= bucket.previousWindow;
 
         if (elapsedTime >= 2 * windowSizeMs) {
             previousWindowRequestCount = 0;
@@ -398,7 +398,7 @@ export class MemoryStore implements RateLimiterStore {
         if (estimatedCount < maxRequests) {
             this.setBucket(key, {
                 currentWindow: currentWindowRequestCount + 1,
-                previouseWindow: previousWindowRequestCount,
+                previousWindow: previousWindowRequestCount,
                 windowStart: bucket.windowStart,
             }, this.getSlidingWindowExpiry(windowSizeMs, currentTime));
 
@@ -406,7 +406,7 @@ export class MemoryStore implements RateLimiterStore {
                 allowed: true,
                 retryAfterMs: 0,
                 limit: maxRequests,
-                remaining: maxRequests - Math.max(0, Math.ceil(maxRequests - estimatedCount)),
+                remaining: Math.max(0, Math.floor(maxRequests - estimatedCount -1)),
             }
 
         }
@@ -414,7 +414,7 @@ export class MemoryStore implements RateLimiterStore {
         else {
             this.setBucket(key, {
                 currentWindow:currentWindowRequestCount,
-                previouseWindow:previousWindowRequestCount,
+                previousWindow:previousWindowRequestCount,
                 windowStart: bucket.windowStart,
             }, this.getSlidingWindowExpiry(windowSizeMs, currentTime));
 

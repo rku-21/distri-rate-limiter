@@ -6,14 +6,14 @@ local currentTime=tonumber(ARGV[3]);
 
 local currentWindow=math.floor(currentTime/windowSizeMs);
 
-local previusWindow=currentWindow-1;
+local previousWindow=currentWindow-1;
 
-local currnetWindowStart=currentWindow*windowSizeMs;
-local elapsedTime=currentTime-currnetWindowStart;
+local currentWindowStart=currentWindow*windowSizeMs;
+local elapsedTime=currentTime-currentWindowStart;
 local currentWindowWeight=elapsedTime/windowSizeMs;
 
 --  reads counter 
-local curentWindowRequestCount= tonumber(
+local currentWindowRequestCount= tonumber(
     redis.call(
     "HGET",
     key,
@@ -26,7 +26,7 @@ local previousWindowRequestCount=tonumber(
     redis.call(
     "HGET",
     key,
-    tostring(previusWindow)
+    tostring(previousWindow)
 
     )
 ) or 0;
@@ -34,7 +34,7 @@ local previousWindowRequestCount=tonumber(
 
 --- estimated count 
 
-local estimatedCount=curentWindowRequestCount+previousWindowRequestCount * (1-currentWindowWeight);
+local estimatedCount=currentWindowRequestCount+previousWindowRequestCount * (1-currentWindowWeight);
 
 
 --- process the requests (REJECT)
@@ -52,13 +52,13 @@ local estimatedCount=curentWindowRequestCount+previousWindowRequestCount * (1-cu
 end
 
 --- Allow
-curentWindowRequestCount=curentWindowRequestCount+1;
+currentWindowRequestCount=currentWindowRequestCount+1;
 
 redis.call(
     "HSET",
     key,
     tostring(currentWindow),
-    curentWindowRequestCount
+    currentWindowRequestCount
 )
 
 redis.call(

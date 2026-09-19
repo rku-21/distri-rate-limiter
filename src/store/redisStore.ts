@@ -2,7 +2,7 @@ import Redis from "ioredis";
 import fs from "fs";
 import path from "path";
 import { RateLimiterStore } from "./RateLimiterStore";
-import { getKey } from "../helperFunctons/getKey";
+import { getKey } from "../helperFunctions/getKey";
 
 import { Bucket } from "../models/Bucket";
 import { RateLimitResult } from "../Interfaces/rateLimitResult";

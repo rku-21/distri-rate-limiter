@@ -26,7 +26,7 @@ Distrilimit currently supports these strategies:
 - `token-bucket`
 - `sliding-window-log`
 - `sliding-window-counter`
-- `fixed-winodw`
+- `fixed-window`
 - `leaky-bucket`
 
 Store choices:
@@ -35,16 +35,6 @@ Store choices:
 - `RedisStore` for production or shared limits
 
 ## Package Imports
-
-If you want to import the helpers directly, use this public API:
-
-```ts
-export { RedisStore } from "./store/RedisStore";
-export { MemoryStore } from "./store/MemoryStore";
-export { rateLimit } from "./rateLimit";
-```
-
-Then you can do:
 
 ```ts
 import {
@@ -142,7 +132,7 @@ const app = express();
 
 app.use(
   rateLimit({
-    strategy: "fixed-winodw",
+    strategy: "fixed-window",
     capacity: 100,
     windowSizeMs: 60_000,
   })

@@ -4,7 +4,9 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "vitest run",
+    "test:watch":"vitest",
+    "test:coverage":"vitest run --coverage",
     "build": "tsc && node scripts/copy-lua-files.js",
     "dev": "ts-node-dev src/server.ts",
     "benchmark": "ts-node-dev src/Benchmark/benchmark.ts",
@@ -22,14 +24,14 @@
   ],
   "dependencies": {
     "@types/express": "^5.0.6",
-    "distrilimit": "^1.0.1",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "ioredis": "^5.11.1",
-    "ts-node-dev": "^2.0.0",
     "typescript": "^6.0.3"
   },
   "devDependencies": {
-    "@types/node": "^26.1.0"
+    "@types/node": "^26.1.0",
+    "ts-node-dev": "^2.0.0",
+    "vitest": "^5.0.0"
   }
 }

@@ -6,7 +6,7 @@ local currentTime=tonumber(ARGV[3]);
 
 local windowStart=currentTime-windowSizeMs;
 
---  remove  expire requests  
+--  remove expired requests
 redis.call (
     "ZREMRANGEBYSCORE",
     key,
