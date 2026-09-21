@@ -67,7 +67,7 @@ redis.call(
     windowSizeMs*2
 )
 
-return {1,0,maxRequests,maxRequests-estimatedCount};
+return {1,0,maxRequests,math.max(0,math.floor(maxRequests-estimatedCount-1))};
 
 
 

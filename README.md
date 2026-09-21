@@ -294,25 +294,44 @@ The custom handler is invoked only when a request is blocked. If no handler is p
 
 
 
-### Throughput Benchmark
+## Performance Benchmarks
 
-Example table:
+The following load test measures the in-memory fixed-window implementation
+(`MemoryStore.executeFixedWindow`) under concurrent promise-based load. The test
+warms up the store with 5,000 requests and then runs three scenarios at each
+load level:
 
-| Algorithm | Time (ms) | Latency (ms/request) | Throughput (req/s) | Allowed |
-| --- | ---: | ---: | ---: | ---: |
-| Token Bucket | 369 | 0.369 | 2710.0271 | 1000 |
-| Sliding Window Log | 358 | 0.358 | 2793.2960 | 1000 |
-| Sliding Window Counter | 404 | 0.404 | 2475.2475 | 1000 |
+- **All Allowed**: an effectively unlimited limit, so every request is allowed.
+- **Heavy Rejection**: one user with a limit of 100 requests.
+- **Multiple Users**: 1,000 users sharing a limit of 100 requests each.
 
-### Rate-Limit Behavior Benchmark
+Run the benchmark with:
 
-Example table:
+```bash
+npx tsx src/Benchmark/loadTest.ts
+```
 
-| Algorithm | Requests | Allowed | Rejected | Total Time (ms) |
-| --- | ---: | ---: | ---: | ---: |
-| Token Bucket | 1000 | 100 | 900 | xxx |
-| Sliding Window Log | 1000 | 100 | 900 | 326 |
-| Sliding Window Counter | 1000 | 100 | 900 | 273 |
+### Load-Test Results
+
+Results from the recorded run:
+
+| Requests | Scenario | Allowed | Rejected | Total time (ms) | Throughput (req/s) | p50 (ms) | p90 (ms) | p95 (ms) | p99 (ms) |
+| ---: | :--- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| 10,000 | All Allowed | 10,000 | 0 | 22.60 | 442,440.68 | 8.6550 | 17.6570 | 18.6565 | 19.0127 |
+| 10,000 | Heavy Rejection | 100 | 9,900 | 15.52 | 644,176.32 | 7.8720 | 13.1994 | 13.8311 | 14.2143 |
+| 10,000 | Multiple Users | 10,000 | 0 | 15.04 | 664,774.28 | 7.9536 | 10.0568 | 10.4414 | 10.8271 |
+| 50,000 | All Allowed | 50,000 | 0 | 74.73 | 669,114.73 | 34.5834 | 62.5421 | 63.9235 | 64.8585 |
+| 50,000 | Heavy Rejection | 100 | 49,900 | 55.39 | 902,616.69 | 30.5590 | 47.8484 | 48.7318 | 49.4354 |
+| 50,000 | Multiple Users | 50,000 | 0 | 67.31 | 742,840.50 | 39.4302 | 57.6614 | 58.6244 | 59.4895 |
+| 100,000 | All Allowed | 100,000 | 0 | 130.99 | 763,388.50 | 64.0442 | 112.3818 | 117.5114 | 119.3791 |
+| 100,000 | Heavy Rejection | 100 | 99,900 | 112.82 | 886,348.81 | 63.9287 | 98.1305 | 99.8756 | 101.2695 |
+| 100,000 | Multiple Users | 100,000 | 0 | 135.70 | 736,943.57 | 75.7374 | 115.5273 | 117.5569 | 119.0783 |
+
+**Notes:** Throughput is calculated as total requests divided by total batch
+time. Latency percentiles measure individual `MemoryStore` operations. These
+figures are workload-specific and will vary with the Node.js version, operating
+system, processor, and system load; use the benchmark to compare changes in the
+same environment rather than as a universal hardware claim.
 
 
 

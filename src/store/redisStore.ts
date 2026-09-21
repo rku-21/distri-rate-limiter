@@ -169,4 +169,8 @@ export class RedisStore implements RateLimiterStore {
      async ping():Promise<string> {
         return await this.redis.ping();
     }
+
+    async disconnect(): Promise<void> {
+        await this.redis.quit();
+    }
 }

@@ -60,5 +60,5 @@ redis.call(
      windowSizeMs
 )
 
-return {1,0,maxRequests,maxRequests-currentRequests};
+return {1,0,maxRequests,maxRequests-currentRequests-1};
 
