@@ -1,9 +1,6 @@
 import { ModuleResolutionKind } from "typescript";
 import {MemoryStore} from "../store/MemoryStore";
 
-
-
-
 type Scenario = {
    name : string;
    limit : number;

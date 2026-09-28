@@ -6,9 +6,12 @@ import { handler } from "../types/customHandler";
 export class RateLimitMiddleWare {
 
     constructor (
+
         private readonly Limiter:RateLimiterStrategy,
+        private readonly failureMode: string,
         private readonly keyGenerator?:keyGenerator,
         private readonly handler?:handler,
+       
     ){
         this.handle=this.handle.bind(this);
     }
@@ -18,6 +21,8 @@ export class RateLimitMiddleWare {
         res:Response,
         next:NextFunction,
     ): Promise<void> {
+
+    try {
         const identifier=this.keyGenerator?.(req) ?? req.ip!;
 
         const result=await this.Limiter.isAllowed(identifier);
@@ -48,7 +53,21 @@ export class RateLimitMiddleWare {
             return;
         }
         next();
+    }catch(error){
+        if(this.failureMode === "open"){
+            return next();
+
+        }
+         res.status(503).json({
+            error :"Rate Limiter unavailable",
+         })
+         return;
+
+
 
     }
+
+    }
+
 
 }

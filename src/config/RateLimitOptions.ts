@@ -12,6 +12,7 @@ export interface RateLimitOptions {
     store?:RateLimiterStore
     keyGenerator?:keyGenerator,
     handler?:handler,
+    failureMode?: "open" | "closed";
 }
 
 export type RateLimiterOptions =
@@ -21,5 +22,6 @@ export type RateLimiterOptions =
     TokenBucketOptions | 
     FixedWindowOptions |
     LeakyBucketOptions
+
 
     )

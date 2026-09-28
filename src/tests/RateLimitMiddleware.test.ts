@@ -18,7 +18,7 @@ describe("RateLimitMiddleware", ()=>{
 
         const keyGenerator = vi.fn().mockReturnValue("user-123");
         const handler = vi.fn();
-        const middleware= new RateLimitMiddleWare (strategy, keyGenerator, handler);
+        const middleware= new RateLimitMiddleWare (strategy, "closed", keyGenerator, handler);
         const req= {} as any;
 
         const res = {
@@ -49,7 +49,7 @@ describe("RateLimitMiddleware", ()=>{
 
         const keyGenerator = vi.fn().mockReturnValue("user-123");
        
-        const middleware=new RateLimitMiddleWare(strategy, keyGenerator);
+        const middleware=new RateLimitMiddleWare(strategy, "closed", keyGenerator);
         const req = {} as any ;
         const res = {
             setHeader : vi.fn(),
